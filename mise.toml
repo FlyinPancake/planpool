@@ -1,0 +1,41 @@
+[tools]
+watchexec = "latest"
+
+# Dev defaults so `mise run run-server` works out of the box; a local .env
+# (loaded last) overrides them. Not for production — the token is public.
+[env]
+PLANPOOL_TOKEN = "planpool-local-dev-token"
+PLANPOOL_ADDR = "127.0.0.1:8642"
+PLANPOOL_DATA_DIR = "{{config_root}}/.dev-plans"
+PLANPOOL_URL = "http://127.0.0.1:8642"
+_.file = ".env"
+
+[tasks.run-server]
+description = "Run the planpool server"
+run = "cargo run -p planpool-server"
+sources = [
+  "Cargo.toml",
+  "Cargo.lock",
+  "crates/**/Cargo.toml",
+  "crates/**/*.rs",
+  ".env",
+]
+
+[tasks.dev]
+description = "Run the server, restarting on source changes"
+run = "mise watch run-server"
+
+[tasks.test]
+description = "Run all workspace tests"
+run = "cargo test --workspace"
+
+[tasks.lint]
+description = "Clippy + rustfmt check over the workspace"
+run = [
+  "cargo clippy --workspace --all-targets -- -D warnings",
+  "cargo fmt --all --check",
+]
+
+[tasks.env-example]
+description = "Regenerate .env.example from the config struct"
+run = "cargo run -p planpool-server -- --env-example > .env.example"

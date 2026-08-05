@@ -1,0 +1,10 @@
+[package]
+name = "planpool-types"
+description = "Shared API request/response types for planpool"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+serde = { workspace = true }
+utoipa = { workspace = true }

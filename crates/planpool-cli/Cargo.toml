@@ -1,0 +1,22 @@
+[package]
+name = "planpool-cli"
+description = "pp — push HTML plans to a planpool server and get shareable URLs"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "pp"
+path = "src/main.rs"
+
+[dependencies]
+planpool-types = { workspace = true }
+
+anyhow = { workspace = true }
+clap = { workspace = true }
+clap_complete = { workspace = true }
+confroid = { workspace = true }
+humantime = { workspace = true }
+open = { workspace = true }
+serde_json = { workspace = true }
+ureq = { workspace = true }
