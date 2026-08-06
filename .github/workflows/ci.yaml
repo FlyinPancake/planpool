@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  cargo:
+    runs-on: ubuntu-latest
+    name: Cargo ${{ matrix.name }}
+    strategy:
+      matrix:
+        include:
+          - name: Test
+            key: test
+            cmd: test --workspace
+          - name: Lint
+            key: lint
+            cmd: clippy --workspace --all-targets -- -D warnings
+          - name: Format Check
+            key: format
+            cmd: fmt --all --check
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache-shared-key: ${{ matrix.key }}
+          components: clippy,rustfmt
+      - run: cargo ${{ matrix.cmd }}
+
+  docker:
+    name: Docker
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/docker-build.yaml
+    secrets: inherit
+    with:
+      push: true

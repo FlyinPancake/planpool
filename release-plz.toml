@@ -1,0 +1,28 @@
+# https://release-plz.dev/docs/config
+[workspace]
+# Not published to crates.io; releases are git tags + GitHub releases + Docker images.
+publish = false
+# The workspace releases as one unit; only planpool-server carries the tag,
+# release, and root changelog (see below).
+git_tag_enable = false
+git_release_enable = false
+changelog_update = false
+
+[[package]]
+name = "planpool-server"
+version_group = "planpool"
+git_tag_enable = true
+git_tag_name = "v{{ version }}"
+git_release_enable = true
+git_release_name = "v{{ version }}"
+changelog_update = true
+changelog_path = "./CHANGELOG.md"
+changelog_include = ["planpool-cli", "planpool-types"]
+
+[[package]]
+name = "planpool-cli"
+version_group = "planpool"
+
+[[package]]
+name = "planpool-types"
+version_group = "planpool"

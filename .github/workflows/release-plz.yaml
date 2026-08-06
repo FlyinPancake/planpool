@@ -1,0 +1,85 @@
+name: Release-plz
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release-plz-release:
+    name: Release-plz release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+    outputs:
+      releases_created: ${{ steps.release-plz.outputs.releases_created }}
+      tag: ${{ steps.tag.outputs.tag }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+
+      - name: Run release-plz release
+        id: release-plz
+        uses: release-plz/action@v0.5
+        with:
+          command: release
+        env:
+          # RELEASE_PLZ_TOKEN (a PAT) lets the created tag/release trigger
+          # other workflows; GITHUB_TOKEN works but can't.
+          GITHUB_TOKEN: ${{ secrets.RELEASE_PLZ_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Extract release tag
+        id: tag
+        if: ${{ steps.release-plz.outputs.releases_created == 'true' }}
+        env:
+          RELEASES: ${{ steps.release-plz.outputs.releases }}
+        run: echo "tag=$(jq -r '.[0].tag' <<< "$RELEASES")" >> "$GITHUB_OUTPUT"
+
+  release-plz-pr:
+    name: Release-plz PR
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    concurrency:
+      group: release-plz-${{ github.ref }}
+      cancel-in-progress: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+
+      - name: Run release-plz release-pr
+        uses: release-plz/action@v0.5
+        with:
+          command: release-pr
+        env:
+          # With a plain GITHUB_TOKEN the release PR won't trigger CI;
+          # set RELEASE_PLZ_TOKEN (a PAT) to fix that.
+          GITHUB_TOKEN: ${{ secrets.RELEASE_PLZ_TOKEN || secrets.GITHUB_TOKEN }}
+
+  docker:
+    name: Build and Push Docker Image
+    if: ${{ needs.release-plz-release.outputs.releases_created == 'true' }}
+    needs: release-plz-release
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/docker-build.yaml
+    with:
+      push: true
+      semver_tag: ${{ needs.release-plz-release.outputs.tag }}
+      checkout_ref: ${{ needs.release-plz-release.outputs.tag }}
+    secrets: inherit
