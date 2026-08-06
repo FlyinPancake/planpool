@@ -1,0 +1,7 @@
+target/
+plans/
+.git/
+Dockerfile
+.dockerignore
+README.md
+mise.toml
