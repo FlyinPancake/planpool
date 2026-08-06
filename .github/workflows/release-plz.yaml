@@ -40,7 +40,9 @@ jobs:
         if: ${{ steps.release-plz.outputs.releases_created == 'true' }}
         env:
           RELEASES: ${{ steps.release-plz.outputs.releases }}
-        run: echo "tag=$(jq -r '.[0].tag' <<< "$RELEASES")" >> "$GITHUB_OUTPUT"
+        # The releases output lists every workspace crate; only
+        # planpool-server carries the real git tag (v{{ version }}).
+        run: echo "tag=$(jq -r '.[] | select(.package_name == "planpool-server") | .tag' <<< "$RELEASES")" >> "$GITHUB_OUTPUT"
 
   release-plz-pr:
     name: Release-plz PR
@@ -70,9 +72,10 @@ jobs:
           # set RELEASE_PLZ_TOKEN (a PAT) to fix that.
           GITHUB_TOKEN: ${{ secrets.RELEASE_PLZ_TOKEN || secrets.GITHUB_TOKEN }}
 
+  # Builds on every push to main: branch + sha tags normally, latest + semver
+  # tags when release-plz just created a release. CI only builds for PRs.
   docker:
     name: Build and Push Docker Image
-    if: ${{ needs.release-plz-release.outputs.releases_created == 'true' }}
     needs: release-plz-release
     permissions:
       contents: read

@@ -14,6 +14,22 @@ on:
         required: false
         type: string
         default: ""
+  # Manual escape hatch, e.g. to (re)build a release image:
+  #   gh workflow run docker-build.yaml -f push=true -f semver_tag=v0.1.0 -f checkout_ref=v0.1.0
+  workflow_dispatch:
+    inputs:
+      push:
+        required: false
+        type: boolean
+        default: false
+      semver_tag:
+        required: false
+        type: string
+        default: ""
+      checkout_ref:
+        required: false
+        type: string
+        default: ""
 
 env:
   REGISTRY: ghcr.io

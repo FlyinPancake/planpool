@@ -37,8 +37,11 @@ jobs:
           components: clippy,rustfmt
       - run: cargo ${{ matrix.cmd }}
 
+  # On pushes to main the Release-plz workflow builds the image instead,
+  # so each event builds exactly once.
   docker:
     name: Docker
+    if: ${{ github.event_name == 'pull_request' }}
     permissions:
       contents: read
       packages: write
