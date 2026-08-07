@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0](https://github.com/FlyinPancake/planpool/compare/v0.1.0...v0.2.0) - 2026-08-08
+
+### Added
+
+- *(cli)* embed the agent skill; add `pp skill` and `pp skill install <claude|agents>`
+
 ## [0.1.0](https://github.com/FlyinPancake/planpool/releases/tag/v0.1.0) - 2026-08-06
 
 ### Added

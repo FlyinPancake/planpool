@@ -81,9 +81,9 @@ pp skill install agents     # install to ~/.agents/skills/planpool/ (vendor-neut
 
 Any other agent can just be pointed at the printed output — it's plain
 markdown. The source of truth is
-[`skills/planpool/SKILL.md`](skills/planpool/SKILL.md), embedded at compile
-time. The skill assumes `pp` is on PATH and `PLANPOOL_URL`/`PLANPOOL_TOKEN`
-are set in the agent's environment.
+[`crates/planpool-cli/SKILL.md`](crates/planpool-cli/SKILL.md), embedded at
+compile time. The skill assumes `pp` is on PATH and
+`PLANPOOL_URL`/`PLANPOOL_TOKEN` are set in the agent's environment.
 
 ## API
 

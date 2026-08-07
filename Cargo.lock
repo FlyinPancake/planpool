@@ -776,7 +776,7 @@ checksum = "a89322df9ebe1c1578d689c92318e070967d1042b512afbe49518723f4e6d5cd"
 
 [[package]]
 name = "planpool-cli"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "clap",
@@ -791,7 +791,7 @@ dependencies = [
 
 [[package]]
 name = "planpool-server"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "axum",
  "confroid",
@@ -811,7 +811,7 @@ dependencies = [
 
 [[package]]
 name = "planpool-types"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "serde",
  "utoipa",

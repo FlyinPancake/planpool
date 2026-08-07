@@ -2,6 +2,10 @@
 [workspace]
 # Not published to crates.io; releases are git tags + GitHub releases + Docker images.
 publish = false
+# Determine each package's last release from git tags instead of the (absent)
+# crates.io entry. Without this, release-plz treats every crate as never
+# released, so versions never bump and no release PR is ever opened.
+git_only = true
 # The workspace releases as one unit; only planpool-server carries the tag,
 # release, and root changelog (see below).
 git_tag_enable = false
@@ -22,7 +26,13 @@ changelog_include = ["planpool-cli", "planpool-types"]
 [[package]]
 name = "planpool-cli"
 version_group = "planpool"
+# Tag creation stays disabled (inherited), but the tag *name* must match the
+# workspace tag: in git_only mode release-plz finds a package's last release
+# by its rendered tag name, so cli/types must resolve the same v{{ version }}
+# tag that planpool-server creates.
+git_tag_name = "v{{ version }}"
 
 [[package]]
 name = "planpool-types"
 version_group = "planpool"
+git_tag_name = "v{{ version }}"
