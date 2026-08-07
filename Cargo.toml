@@ -7,12 +7,15 @@ members = [
 ]
 
 [workspace.package]
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 license = "MIT"
 
 [workspace.dependencies]
-planpool-types = { path = "crates/planpool-types" }
+# The version requirement (kept in sync by release-plz) is required because
+# `cargo package` rejects path-only deps, and release-plz packages each crate
+# to compute diffs against the last release.
+planpool-types = { path = "crates/planpool-types", version = "0.2.0" }
 
 anyhow = "1"
 axum = "0.8"

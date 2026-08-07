@@ -9,8 +9,10 @@ use clap::{CommandFactory, Parser, Subcommand};
 
 use crate::client::Client;
 
-/// The planpool agent skill, embedded from the repo's skills directory.
-const SKILL_MD: &str = include_str!("../../../skills/planpool/SKILL.md");
+/// The planpool agent skill. It lives inside the crate (not at the repo
+/// root) so `cargo package` can include it — release-plz packages the crate
+/// to compute diffs against the last release.
+const SKILL_MD: &str = include_str!("../SKILL.md");
 
 /// Environment configuration; flags override where noted.
 #[derive(confroid::Config)]
