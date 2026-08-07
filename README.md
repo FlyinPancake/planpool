@@ -67,6 +67,21 @@ canonical seconds before sending. Only the result goes to stdout — everything
 else (status notes, errors) goes to stderr — so `$(pp push …)` and pipes are
 safe. Exit code is 0 on success, 1 on any failure.
 
+### Agent skill
+
+[`skills/planpool/`](skills/planpool/SKILL.md) is an
+[Agent Skill](https://agentskills.io) that teaches coding agents when and how
+to use `pp`. To install it, copy (or symlink) the directory into your agent's
+skills location:
+
+- Claude Code: `~/.claude/skills/planpool` (or `.claude/skills/planpool` in a
+  project)
+- Codex: `~/.codex/skills/planpool`
+- Anything else: point the agent at `SKILL.md` — it's plain markdown
+
+The skill assumes `pp` is on PATH and `PLANPOOL_URL`/`PLANPOOL_TOKEN` are set
+in the agent's environment.
+
 ## API
 
 ### Upload a plan
