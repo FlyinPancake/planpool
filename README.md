@@ -59,6 +59,7 @@ pp push plan.html --json          # full response (id, url, timestamps)
 pp delete <id-or-url>             # retract a plan early
 pp open <id-or-url>               # open in browser
 pp health                         # check server reachability + token validity
+pp skill                          # print the agent skill (SKILL.md)
 pp completions <shell>            # shell completions
 ```
 
@@ -69,18 +70,20 @@ safe. Exit code is 0 on success, 1 on any failure.
 
 ### Agent skill
 
-[`skills/planpool/`](skills/planpool/SKILL.md) is an
-[Agent Skill](https://agentskills.io) that teaches coding agents when and how
-to use `pp`. To install it, copy (or symlink) the directory into your agent's
-skills location:
+`pp` ships with an embedded [Agent Skill](https://agentskills.io) that teaches
+coding agents when and how to use it:
 
-- Claude Code: `~/.claude/skills/planpool` (or `.claude/skills/planpool` in a
-  project)
-- Codex: `~/.codex/skills/planpool`
-- Anything else: point the agent at `SKILL.md` — it's plain markdown
+```sh
+pp skill                    # print SKILL.md to stdout
+pp skill install claude     # install to ~/.claude/skills/planpool/ (Claude Code)
+pp skill install agents     # install to ~/.agents/skills/planpool/ (vendor-neutral, e.g. Codex)
+```
 
-The skill assumes `pp` is on PATH and `PLANPOOL_URL`/`PLANPOOL_TOKEN` are set
-in the agent's environment.
+Any other agent can just be pointed at the printed output — it's plain
+markdown. The source of truth is
+[`skills/planpool/SKILL.md`](skills/planpool/SKILL.md), embedded at compile
+time. The skill assumes `pp` is on PATH and `PLANPOOL_URL`/`PLANPOOL_TOKEN`
+are set in the agent's environment.
 
 ## API
 

@@ -9,6 +9,9 @@ use clap::{CommandFactory, Parser, Subcommand};
 
 use crate::client::Client;
 
+/// The planpool agent skill, embedded from the repo's skills directory.
+const SKILL_MD: &str = include_str!("../../../skills/planpool/SKILL.md");
+
 /// Environment configuration; flags override where noted.
 #[derive(confroid::Config)]
 struct EnvConfig {
@@ -61,8 +64,31 @@ enum Command {
     },
     /// Check that the server is reachable and the token (if set) is valid
     Health,
+    /// Print the agent skill (SKILL.md), or install it for an agent
+    Skill {
+        #[command(subcommand)]
+        command: Option<SkillCommand>,
+    },
     /// Print shell completions
     Completions { shell: clap_complete::Shell },
+}
+
+#[derive(Subcommand)]
+enum SkillCommand {
+    /// Install the skill into an agent's skills directory
+    Install {
+        /// Agent to install for
+        #[arg(value_enum)]
+        agent: SkillAgent,
+    },
+}
+
+#[derive(clap::ValueEnum, Clone, Copy)]
+enum SkillAgent {
+    /// Claude Code: ~/.claude/skills/planpool/SKILL.md
+    Claude,
+    /// Vendor-neutral (e.g. Codex): ~/.agents/skills/planpool/SKILL.md
+    Agents,
 }
 
 fn main() {
@@ -122,6 +148,20 @@ fn run() -> Result<()> {
                 eprintln!("token not set (PLANPOOL_TOKEN) — push/delete unavailable");
             }
         }
+        Command::Skill { command } => match command {
+            None => print!("{SKILL_MD}"),
+            Some(SkillCommand::Install { agent }) => {
+                let home = std::env::home_dir()
+                    .ok_or_else(|| anyhow!("cannot determine home directory"))?;
+                let path = skill_path(agent, &home);
+                let dir = path.parent().expect("skill path always has a parent");
+                std::fs::create_dir_all(dir)
+                    .with_context(|| format!("cannot create {}", dir.display()))?;
+                std::fs::write(&path, SKILL_MD)
+                    .with_context(|| format!("cannot write {}", path.display()))?;
+                eprintln!("installed {}", path.display());
+            }
+        },
         Command::Completions { shell } => {
             clap_complete::generate(shell, &mut Cli::command(), "pp", &mut std::io::stdout());
         }
@@ -189,6 +229,17 @@ fn is_plan_id(s: &str) -> bool {
     s.len() == 32 && s.bytes().all(|b| matches!(b, b'0'..=b'9' | b'a'..=b'f'))
 }
 
+fn skill_path(agent: SkillAgent, home: &std::path::Path) -> PathBuf {
+    let agent_dir = match agent {
+        SkillAgent::Claude => ".claude",
+        SkillAgent::Agents => ".agents",
+    };
+    home.join(agent_dir)
+        .join("skills")
+        .join("planpool")
+        .join("SKILL.md")
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -227,5 +278,23 @@ mod tests {
     #[test]
     fn cli_definition_is_valid() {
         Cli::command().debug_assert();
+    }
+
+    #[test]
+    fn skill_paths_per_agent() {
+        let home = std::path::Path::new("/home/user");
+        assert_eq!(
+            skill_path(SkillAgent::Claude, home),
+            PathBuf::from("/home/user/.claude/skills/planpool/SKILL.md")
+        );
+        assert_eq!(
+            skill_path(SkillAgent::Agents, home),
+            PathBuf::from("/home/user/.agents/skills/planpool/SKILL.md")
+        );
+    }
+
+    #[test]
+    fn embedded_skill_has_frontmatter() {
+        assert!(SKILL_MD.starts_with("---\nname: planpool\n"));
     }
 }
