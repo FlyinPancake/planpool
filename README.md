@@ -59,6 +59,7 @@ pp push plan.html --json          # full response (id, url, timestamps)
 pp delete <id-or-url>             # retract a plan early
 pp open <id-or-url>               # open in browser
 pp health                         # check server reachability + token validity
+pp skill                          # print the agent skill (SKILL.md)
 pp completions <shell>            # shell completions
 ```
 
@@ -66,6 +67,23 @@ pp completions <shell>            # shell completions
 canonical seconds before sending. Only the result goes to stdout — everything
 else (status notes, errors) goes to stderr — so `$(pp push …)` and pipes are
 safe. Exit code is 0 on success, 1 on any failure.
+
+### Agent skill
+
+`pp` ships with an embedded [Agent Skill](https://agentskills.io) that teaches
+coding agents when and how to use it:
+
+```sh
+pp skill                    # print SKILL.md to stdout
+pp skill install claude     # install to ~/.claude/skills/planpool/ (Claude Code)
+pp skill install agents     # install to ~/.agents/skills/planpool/ (vendor-neutral, e.g. Codex)
+```
+
+Any other agent can just be pointed at the printed output — it's plain
+markdown. The source of truth is
+[`skills/planpool/SKILL.md`](skills/planpool/SKILL.md), embedded at compile
+time. The skill assumes `pp` is on PATH and `PLANPOOL_URL`/`PLANPOOL_TOKEN`
+are set in the agent's environment.
 
 ## API
 
