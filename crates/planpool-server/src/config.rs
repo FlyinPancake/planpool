@@ -30,9 +30,14 @@ pub struct Config {
         default = humantime::Duration::from(Duration::from_secs(30 * 24 * 60 * 60))
     )]
     pub max_ttl: Duration,
-    /// Upload size limit in bytes (5 MB)
-    #[confroid(name = "PLANPOOL_MAX_BODY_BYTES", default = 5_242_880)]
-    pub max_body_bytes: usize,
+    /// Upload size limit; plain bytes or human-readable sizes like "5MB", "512KiB"
+    #[confroid(
+        name = "PLANPOOL_MAX_BODY_BYTES",
+        bytesize,
+        default = 5_242_880,
+        example = "5MB"
+    )]
+    pub max_body_bytes: u64,
     /// Base URL used in returned plan links; falls back to the request's Host header when unset
     #[confroid(name = "PLANPOOL_PUBLIC_URL", example = "https://plans.example.com")]
     pub public_url: Option<String>,
@@ -98,6 +103,22 @@ mod tests {
             config.public_url.as_deref(),
             Some("https://plans.example.com")
         );
+    }
+
+    #[test]
+    fn max_body_accepts_human_readable_sizes() {
+        for (value, expected) in [
+            ("10MB", 10_000_000),
+            ("2MiB", 2 * 1024 * 1024),
+            ("5242880", 5_242_880),
+        ] {
+            let config = load_from(&[
+                ("PLANPOOL_TOKEN", "a-long-enough-token"),
+                ("PLANPOOL_MAX_BODY_BYTES", value),
+            ])
+            .unwrap();
+            assert_eq!(config.max_body_bytes, expected, "for input {value:?}");
+        }
     }
 
     #[test]

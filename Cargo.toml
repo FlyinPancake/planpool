@@ -21,7 +21,7 @@ anyhow = "1"
 axum = "0.8"
 clap = { version = "4", features = ["derive"] }
 clap_complete = "4"
-confroid = { version = "0.0.4", features = ["docs", "humantime"] }
+confroid = { version = "0.0.5", features = ["docs", "humantime", "bytesize"] }
 humantime = "2"
 open = "5"
 ureq = { version = "3", features = ["json"] }

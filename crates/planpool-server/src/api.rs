@@ -67,7 +67,9 @@ pub fn router(state: AppState) -> Router {
             }),
         )
         .merge(Scalar::with_url("/docs", api))
-        .layer(DefaultBodyLimit::max(state.config.max_body_bytes))
+        .layer(DefaultBodyLimit::max(
+            usize::try_from(state.config.max_body_bytes).unwrap_or(usize::MAX),
+        ))
         .with_state(state)
 }
 
