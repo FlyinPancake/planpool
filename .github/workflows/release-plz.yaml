@@ -72,6 +72,64 @@ jobs:
           # set RELEASE_PLZ_TOKEN (a PAT) to fix that.
           GITHUB_TOKEN: ${{ secrets.RELEASE_PLZ_TOKEN || secrets.GITHUB_TOKEN }}
 
+  # Builds the pp CLI for each platform and attaches the binaries to the
+  # GitHub release created by release-plz. Uploading assets doesn't need to
+  # trigger workflows, so plain GITHUB_TOKEN is enough here.
+  cli-assets:
+    name: Attach pp binary (${{ matrix.target }})
+    needs: release-plz-release
+    if: ${{ needs.release-plz-release.outputs.releases_created == 'true' }}
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-gnu
+            runner: ubuntu-24.04
+          - target: aarch64-unknown-linux-gnu
+            runner: ubuntu-24.04-arm
+          - target: x86_64-apple-darwin
+            runner: macos-15-intel
+          - target: aarch64-apple-darwin
+            runner: macos-latest
+          - target: x86_64-pc-windows-msvc
+            runner: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.release-plz-release.outputs.tag }}
+          persist-credentials: false
+
+      - name: Install Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          target: ${{ matrix.target }}
+
+      - name: Build pp
+        run: cargo build --release --package planpool-cli --target ${{ matrix.target }}
+
+      - name: Package and upload
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.release-plz-release.outputs.tag }}
+          TARGET: ${{ matrix.target }}
+        run: |
+          set -euo pipefail
+          asset="pp-${TAG}-${TARGET}"
+          cd "target/${TARGET}/release"
+          if [[ "$TARGET" == *windows* ]]; then
+            asset="${asset}.zip"
+            7z a "$asset" pp.exe
+          else
+            asset="${asset}.tar.gz"
+            tar -czf "$asset" pp
+          fi
+          gh release upload "$TAG" "$asset" --clobber
+
   # Builds on every push to main: branch + sha tags normally, latest + semver
   # tags when release-plz just created a release. CI only builds for PRs.
   docker:
