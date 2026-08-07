@@ -75,10 +75,15 @@ jobs:
   # Builds the pp CLI for each platform and attaches the binaries to the
   # GitHub release created by release-plz. Uploading assets doesn't need to
   # trigger workflows, so plain GITHUB_TOKEN is enough here.
+  #
+  # Gate on the tag, not releases_created: planpool-cli/-types are tagless
+  # (git-only), so release-plz "releases" them on every push and always
+  # reports releases_created=true. Only a real planpool-server release
+  # yields a non-empty tag.
   cli-assets:
     name: Attach pp binary (${{ matrix.target }})
     needs: release-plz-release
-    if: ${{ needs.release-plz-release.outputs.releases_created == 'true' }}
+    if: ${{ needs.release-plz-release.outputs.tag != '' }}
     runs-on: ${{ matrix.runner }}
     permissions:
       contents: write
