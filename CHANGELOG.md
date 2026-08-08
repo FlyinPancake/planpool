@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1](https://github.com/FlyinPancake/planpool/compare/v0.2.0...v0.2.1) - 2026-08-08
+
+### Added
+
+- *(config)* support human-readable upload size limits ([#6](https://github.com/FlyinPancake/planpool/pull/6))
+
+### Other
+
+- update Cargo.toml dependencies
+
 ## [0.2.0](https://github.com/FlyinPancake/planpool/compare/v0.1.0...v0.2.0) - 2026-08-08
 
 ### Added
