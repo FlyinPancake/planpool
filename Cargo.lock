@@ -144,6 +144,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fc652a48c352aef3ea3aed32080501cf3ef6ed5da78602a020c991775b0aff04"
 
 [[package]]
+name = "bytesize"
+version = "2.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7354288c522e7e980fafd2075d63d1285794c3a6a16cdd492f189ea406e5f18b"
+
+[[package]]
 name = "cc"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -216,10 +222,11 @@ checksum = "1d07550c9036bf2ae0c684c4297d503f838287c83c53686d05370d0e139ae570"
 
 [[package]]
 name = "confroid"
-version = "0.0.4"
+version = "0.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b9790f4d59b6af0dd1f66a8754ae9edaec62f696ff90bdb4397ea8daa529515e"
+checksum = "d1aeb1f2b839eaeb74c8baee52f8d3cc88cb9fd3d2557c0525fb3b32a8e610c2"
 dependencies = [
+ "bytesize",
  "confroid-derive",
  "humantime",
  "thiserror",
@@ -227,9 +234,9 @@ dependencies = [
 
 [[package]]
 name = "confroid-derive"
-version = "0.0.4"
+version = "0.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a76942888b101168d2b649edee6747f2533f1fd2c6b0d47e777bb2d78198b8e7"
+checksum = "3dba2f9097ec57c48c22f46ba79e11e772163dfb77df7b11ee07aa3f988796f8"
 dependencies = [
  "proc-macro2",
  "quote",

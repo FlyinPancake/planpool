@@ -38,7 +38,7 @@ deletes; viewing needs only the (unguessable) plan URL.
 | `PLANPOOL_DATA_DIR`       | `./plans`        | Where plan files are stored                                                                                |
 | `PLANPOOL_DEFAULT_TTL`    | `7days`          | TTL when the upload doesn't specify one ([humantime](https://docs.rs/humantime) format, e.g. `12h`, `30m`) |
 | `PLANPOOL_MAX_TTL`        | `30days`         | Requested TTLs are clamped to this (humantime format)                                                      |
-| `PLANPOOL_MAX_BODY_BYTES` | `5242880` (5 MB) | Upload size limit                                                                                          |
+| `PLANPOOL_MAX_BODY_BYTES` | `5242880` (5 MB) | Upload size limit ([bytesize](https://docs.rs/bytesize) format, e.g. `5MB`, `512KiB`, or plain bytes)      |
 | `PLANPOOL_PUBLIC_URL`     | _(Host header)_  | Base URL used in returned links, e.g. `https://plans.example.com`                                          |
 
 A ready-to-fill [`.env.example`](.env.example) is checked in; regenerate it any
